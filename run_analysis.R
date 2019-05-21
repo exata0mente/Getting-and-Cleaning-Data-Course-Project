@@ -101,3 +101,5 @@ tidyDataSetTrain <- dfTest %>%
 ### - [X] Appropriately labels the data set with descriptive variable names. 
 ### - [X] From the data set in step 4, creates a second, independent tidy data 
 ###       set with the average of each variable for each activity and each subject.
+
+write.table(x = tidyDataSetTrain, row.names = FALSE)
