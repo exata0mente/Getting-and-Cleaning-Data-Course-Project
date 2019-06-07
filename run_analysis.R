@@ -58,6 +58,7 @@ names(trainDataSet) <- featuresSet$nameFeature
 
 dfTest  <- bind_cols(testSubject, testLabel, testDataSet[indexColMean | indexColStd])
 dfTrain <- bind_cols(trainSubject, trainLabel, trainDataSet[indexColMean | indexColStd])
+dfFinal <- bind_rows(dfTest, dfTrain)
 
 ### - [X] Merges the training and the test sets to create one data set.
 ### - [X] Extracts only the measurements on the mean and standard deviation for each measurement.
@@ -71,16 +72,16 @@ dfTrain <- bind_cols(trainSubject, trainLabel, trainDataSet[indexColMean | index
 ### acc --> Accelerometer
 # Assim tBodyGyromeanZ será substuído por TimeBodyGyroscopeMeanZ
 
-tmp <- names(dfTest) %>% 
+tmp <- names(dfFinal) %>% 
   gsub(pattern = "^t", replacement = "Time") %>%
   gsub(pattern = "^f", replacement = "Frequence") %>%
   gsub(pattern = "[Aa]cc", replacement = "Accelerometer") %>%
   gsub(pattern = "[G]yro", replacement = "Gyroscope") %>%
+  gsub(pattern = "Mag", replacement = "Magnitude") %>%
   gsub(pattern = "mean", replacement = "Mean") %>%
   gsub(pattern = "std", replacement = "Std")
 
-names(dfTest) <- tmp
-names(dfTrain) <- tmp
+names(dfFinal) <- tmp
 rm(tmp)
 ### - [X] Merges the training and the test sets to create one data set.
 ### - [X] Extracts only the measurements on the mean and standard deviation for each measurement.
@@ -90,7 +91,7 @@ rm(tmp)
 ###       set with the average of each variable for each activity and each subject.
 
 
-tidyDataSetTrain <- dfTest %>% 
+tidyDataSet <- dfFinal %>% 
   gather(key = "variableMeasurement", value = "valueMeasurement", -c("idSubject", "idActivity", "nameActivity")) %>%
   group_by(idSubject, idActivity, nameActivity, variableMeasurement) %>%
   summarise(avgMeasurement = mean(valueMeasurement))
@@ -102,4 +103,4 @@ tidyDataSetTrain <- dfTest %>%
 ### - [X] From the data set in step 4, creates a second, independent tidy data 
 ###       set with the average of each variable for each activity and each subject.
 
-write.table(x = tidyDataSetTrain, row.names = FALSE)
+write.table(x = tidyDataSet, file = "tidy_data_set.txt", row.names = FALSE)
